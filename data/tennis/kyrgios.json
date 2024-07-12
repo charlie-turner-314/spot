@@ -1,0 +1,17 @@
+[
+    {
+        "video": "video1",
+        "num_frames": 128,
+        "num_events": 3,
+        "events": [
+            {
+                "frame": 3,
+                "label": "FAR_COURT_SERVE",
+                "comment": "no idea"
+            }
+        ],
+        "fps": 60,
+        "width": 1920,
+        "height": 1080
+    }
+]

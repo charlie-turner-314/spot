@@ -1,0 +1,1 @@
+[{"video": "video1", "events": [{"label": "far_court_serve", "frame": 0, "score": 0.6416015625}, {"label": "near_court_bounce", "frame": 26, "score": 0.96826171875}, {"label": "near_court_swing", "frame": 44, "score": 0.55029296875}, {"label": "far_court_bounce", "frame": 103, "score": 0.6689453125}], "fps": 60.0}]
