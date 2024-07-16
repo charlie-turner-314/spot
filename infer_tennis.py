@@ -46,6 +46,10 @@ def get_last_epoch(model_dir):
     assert last_epoch >= 0
     return last_epoch
 
+def clean_frame_dir(frame_dir):
+    """Remove all frames in the frame directory"""
+    os.system(f"rm -r {frame_dir}/*")
+
 
 def infer_video(
     video_path,
