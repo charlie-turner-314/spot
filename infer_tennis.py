@@ -107,7 +107,7 @@ def infer_frame_dir(frame_dir):
 
 def infer_video(
     video_path,
-) -> tuple:
+) -> dict:
     """
     Use the model to infer keyframes from videos
     """
@@ -135,11 +135,6 @@ def infer_video(
     frame_dir = "frame_dir"
 
     splits = split_video(video_path, frame_dir)
-    # splits = {
-    #     "video_name": "kyrgios_murray",
-    #     "num_frames": len(os.listdir("/home/charlie/Documents/TennisMatches/kyrgios_murray")),
-    #     "fps": 25
-    # }
     print("Num frames:", splits["num_frames"])
     video_name = splits["video_name"]
 
@@ -150,8 +145,7 @@ def infer_video(
             "events": [],
             "fps": 25,
             "num_frames": splits["num_frames"],
-        }
-    ]
+        } ]
     if os.path.exists("labels.json"):
         os.remove("labels.json")
 
@@ -171,7 +165,29 @@ def infer_video(
 
     result = evaluate(model, dataset, classes)
 
-    return result[0], splits["num_frames"]
+    events = result[0]
+
+    return filter_events(events)
+
+def filter_events(events, threshold=5):
+    # remove events that are too close together
+    last_event = None
+    filtered_events = []
+    for event in events["events"]:
+        if last_event is None:
+            last_event = event
+            filtered_events.append(event)
+        else:
+            if event["frame"] - last_event["frame"] < threshold:
+                # keep only the one with the highest confidence score
+                if event["score"] > last_event["score"]:
+                    filtered_events[-1] = event
+            else:
+                filtered_events.append(event)
+                last_event = event
+    events["events"] = filtered_events
+    return events
+
 
 
 def evaluate(model, dataset, classes) -> "list[dict]":

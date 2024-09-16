@@ -94,15 +94,11 @@ def extract_sequences(sequences, video_path, output_dir, sequence_dir="seqs", fr
         new_sequences.append(
             [
                 {
-                    "frame": start_frame,
-                    # "label": fg_player[i],
-                    "confidence": 1,
-                },
-                {
-                    "frame": end_frame,
-                    # "label": fg_player[i],
-                    "confidence": 1,
-                },
+                    "frame": event["frame"],
+                    "label": event["label"],
+                    "confidence": event["confidence"],
+                }
+                for event in sequence
             ]
         )
 
@@ -125,14 +121,21 @@ def extract_sequences(sequences, video_path, output_dir, sequence_dir="seqs", fr
         ffmpeg_extract_subclip(video_path, start_time, end_time, targetname=output_file)
 
         # save the events in the sequence to a json file in aux/
-        sequence_file = os.path.join(sequence_dir, os.basename(output_file).split(".")[0] + ".json")
+        os.makedirs(sequence_dir, exist_ok=True)
+        sequence_file = os.path.join(sequence_dir, os.path.basename(output_file).split(".")[0] + ".json")
         # account for the start frame offset
-        first_event = sequence[0] 
-        for event in sequence:
-            event["frame"] -= (first_event["frame"] - 10)
+        start_frame = sequence[0]["frame"]
+        adjusted_sequence = [
+            {
+                "frame": event["frame"] - start_frame + 10,
+                "label": event["label"],
+                "confidence": event["confidence"],
+            }
+            for event in sequence
+        ]
 
         with open(sequence_file, "w") as f:
-            json.dump(sequence, f)
+            json.dump(adjusted_sequence, f)
 
 
 
